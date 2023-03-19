@@ -10,11 +10,12 @@ module.exports = async (ctx, next) => {
         const ret = await fileUtils.getFileJsonData(filePath);
         ctx.response.body = ret;
     } catch (error) {
-        const errorMsg = {
-            message: '请求失败',
-            status: 404
-        }
-        ctx.response.body = JSON.stringify(errorMsg);
+        // const errorMsg = {
+        //     message: '请求失败',
+        //     status: 404
+        // }
+        // ctx.response.body = JSON.stringify(errorMsg);
+        console.log(url,'url')
     }
 
     console.log(filePath)
