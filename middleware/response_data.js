@@ -6,6 +6,7 @@ module.exports = async (ctx, next) => {
     let filePath = url.replace('/api', '');
     filePath = '../data' + filePath + '.json' // /api/seller   ../data/seller.json
     filePath = path.join(__dirname, filePath)
+    console.log(url,"response_data")
     try {
         const ret = await fileUtils.getFileJsonData(filePath);
         ctx.response.body = ret;

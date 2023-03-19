@@ -6,14 +6,16 @@
   </div>
 </template>
 
-<script >
+<script>
 import * as echarts from 'echarts';
-import axios from 'axios'
-import { defineComponent, onMounted } from "vue"; // 主要
-import service from '../request/service'
+import axios from 'axios';
+import { defineComponent, onMounted } from 'vue'; // 主要
+import service from '../request/service';
 export default defineComponent({
   setup(props, context) {
-    service.get('seller')
+    const arr = { name: 'xxx' };
+    service.post('user', { users: arr });
+    // service.get('seller')
     onMounted(() => {
       var myChart = echarts.init(document.getElementById('main'));
       // 绘制图表
@@ -36,11 +38,9 @@ export default defineComponent({
       });
     });
 
-    return {
-
-    };
+    return {};
   }
-});
+})
 </script>
 
 <style lang="less" scoped>
