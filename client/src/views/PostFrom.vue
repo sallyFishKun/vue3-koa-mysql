@@ -27,12 +27,13 @@
     </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="onSubmit">发布</el-button>
-      <el-button>取消</el-button>
+      <!-- <el-button>取消</el-button> -->
     </el-form-item>
   </el-form>
 </template>
 
 <script setup>
+import router from '@/router';
 import { reactive } from 'vue';
 import service from '../request/service';
 // do not use same name with ref
@@ -48,7 +49,15 @@ const form = reactive({
 
 const onSubmit = () => {
   console.log(form);
-  service.post('post/new', form);
+  service.post('post/new', form).then(res => {
+    if (res && res.status == 200 && res.data) {
+      router.replace('/detail?id=' + res.data);
+      ElMessage({
+        message: res.message,
+        type: 'success',
+      });
+    }
+  });
 }
 </script>
 <style lang="less" scoped>
