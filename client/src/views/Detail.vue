@@ -4,7 +4,7 @@
       <template #header>
         <div class="card-header">
           <span>物品信息</span>
-          <el-button class="button" @click="go">继续发帖</el-button>
+          <el-button class="button" @click="go">发帖</el-button>
         </div>
       </template>
       <ul>
@@ -15,6 +15,26 @@
               form.myinfo[item.key]
             }}</span>
           </p>
+        </li>
+      </ul>
+    </el-card>
+    <el-card class="box-card liuyanban">
+      <template #header>
+        <div class="card-header">
+          <span>领取人信息</span>
+          <el-button class="button" @click="dialogFormVisible2 = true"
+            >申请领取</el-button
+          >
+        </div>
+      </template>
+      <ul>
+        <li v-for="(item, index) in form2.list" :key="index">
+          <p class="value">
+            领取人：{{ item.user }} ,联系方式{{ item.dec }}
+            <em>{{ item.date }}</em>
+          </p>
+
+          <el-divider />
         </li>
       </ul>
     </el-card>
@@ -37,6 +57,7 @@
         </li>
       </ul>
     </el-card>
+
     <el-dialog v-model="dialogFormVisible" title="留言">
       <el-form :model="form">
         <el-form-item label="用户名" :label-width="formLabelWidth">
@@ -53,16 +74,35 @@
         </span>
       </template>
     </el-dialog>
+    <el-dialog v-model="dialogFormVisible2" title="申请领取">
+      <el-form :model="form2">
+        <el-form-item label="领取人名称" :label-width="formLabelWidth2">
+          <el-input v-model="form2.user" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="联系方式" :label-width="formLabelWidth2">
+          <el-input v-model="form2.dec" type="textarea" autocomplete="off" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogFormVisible2 = false">Cancel</el-button>
+          <el-button type="primary" @click="onRecipient"> Confirm </el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 <script setup>
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import service from '../request/service';
 import { useRouter, useRoute } from 'vue-router';
+import { ElMessage } from 'element-plus';
 const route = useRoute();
 const router = useRouter();
 const dialogFormVisible = ref(false);
+const dialogFormVisible2 = ref(false);
 const formLabelWidth = '80px';
+const formLabelWidth2 = '100px';
 const form = reactive({
   user: '',
   dec: '',
@@ -70,6 +110,7 @@ const form = reactive({
   myMsgs: [
 
   ],
+
   mydata: [
     { label: '物品名称', key: 'name' },
     { label: '捡到地点', key: 'address' },
@@ -79,7 +120,14 @@ const form = reactive({
     { label: '相关描述', key: 'desc' },
   ]
 });
+const form2 = reactive({
+  user: '',
+  dec: '',
+  list: []
+});
+onMounted(() => {
 
+});
 service.post('post/detail', { id: route.query.id }).then(res => {
   if (res && res.status == 200) {
     form.myinfo = res.data;
@@ -92,15 +140,47 @@ function getMsgList() {
     }
   });
 }
+function getRecipient() {
+  service.post('recipient/list', { id: route.query.id }).then(res => {
+    if (res && res.status == 200) {
+      form2.list = res.data;
+    }
+  });
+}
+getRecipient();
 getMsgList();
 const go = () => router.push('/post');
 const onMsgBoard = () => {
   const { user, dec } = form;
-  service.post('msg/add', { id: route.query.id, user, dec, date: new Date().toLocaleString() }).then(res => {
+  service.post('msg/add', { pid: route.query.id, user, dec, date: new Date().toLocaleString() }).then(res => {
     if (res && res.status == 200) {
-      //   getMsgList();
+
       dialogFormVisible.value = false;
       form.myMsgs.push(res.data);
+      ElMessage({
+        message: res.message,
+        type: 'success',
+      });
+    }
+  });
+};
+
+const onRecipient = () => {
+  const { user, dec, list } = form2;
+  // let i = list.filter(item => {
+  //   console.log(item.user, user, item.user == user);
+  //   if (item.user == user) { return item; }
+  // });
+  // if (i.length > 0) {
+  //   ElMessage('一个人不能同时申请多次');
+  //   return;
+  // }
+  service.post('recipient/add', { pid: route.query.id, user, dec, date: new Date().toLocaleString() }).then(res => {
+    if (res && res.status == 200) {
+
+      dialogFormVisible2.value = false;
+
+      getRecipient();
       ElMessage({
         message: res.message,
         type: 'success',

@@ -10,13 +10,15 @@
           <el-button size="small" @click="handleDetail(scope.row.id)"
             >查看详情</el-button
           >
-          <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
+          <el-button
+            size="small"
+            @click="router.push('admindetail?id=' + scope.row.id)"
             >编辑</el-button
           >
           <el-button
             size="small"
             type="danger"
-            @click="handleDelete(scope.$index, scope.row)"
+            @click="handleDelete(scope.row.id)"
             >删除</el-button
           >
         </template>
@@ -44,8 +46,12 @@ service.get('post/list').then(res => {
 const handleEdit = (index, row) => {
   console.log(index, row);
 };
-const handleDelete = (index, row) => {
-  console.log(index, row);
+const handleDelete = (id) => {
+  service.get('post/del', { id }).then(res => {
+    if (res.status === 200 && Array.isArray(res.data)) {
+      form.tableData = res.data;
+    }
+  });
 };
 const handleDetail = (id) => router.push('/detail?id=' + id);
 const go = () => {

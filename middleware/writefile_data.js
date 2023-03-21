@@ -1,15 +1,17 @@
 var fs = require("fs");
-
+const Router = require("koa-router");
 const crypto = require("crypto");
 const Msg = require("./msg");
 const path = require("path");
+const router = new Router();
+var fs = require("fs");
 module.exports = async (ctx, next) => {
   // user
   const url = ctx.request.url;
   let filePath = url.replace("/api", "");
   let is = false;
-  const str = await paresPostData(ctx);
-  console.log(str, "--------sssssssssssss");
+  let str = await ctx.request.body; //paresPostData(ctx);
+  console.log(str, "st----ctx-----r");
   if (filePath.indexOf("/post") != -1) {
     filePath = filePath.replace("/post", "");
 
@@ -17,8 +19,11 @@ module.exports = async (ctx, next) => {
   }
   if (filePath.indexOf("/msg") != -1) {
     filePath = filePath.replace("/msg", "");
-    console.log(filePath, "----------------mmmmmmmm", str);
     is = await msg(filePath, str);
+  }
+  if (filePath.indexOf("/recipient") != -1) {
+    filePath = filePath.replace("/recipient", "");
+    is = await recipient(filePath, str);
   }
   if (is) {
     ctx.body = {
@@ -33,43 +38,74 @@ module.exports = async (ctx, next) => {
     };
     ctx.body = errorMsg;
   }
-  next();
+  await next();
 };
 const msg = async (filePath, str) => {
   let f = "../data/msg.json";
   f = path.join(__dirname, f);
   if (filePath === "/add") {
-    const is = await Msg.addMsg(f, str);
+    const is = await Msg.add(f, str);
     return is;
   }
   if (filePath === "/list") {
-    console.log("ssss----------------", str, "---------");
     if (!str) return false;
-    const is = await Msg.readMsg(f, str);
+    const is = await Msg.read(f, str);
+    return is;
+  }
+  if (filePath === "/del") {
+    if (!str) return false;
+    const is = await Msg.del(f, str);
+    return is;
+  }
+  return false;
+};
+const recipient = async (filePath, str) => {
+  let f = "../data/recipient.json";
+  f = path.join(__dirname, f);
+  if (filePath === "/add") {
+    const is = await Msg.add(f, str);
+    return is;
+  }
+  if (filePath === "/list") {
+    console.log("ssss---------", str, "-----recipient/list----", Boolean(str));
+    if (!str) return false;
+    const is = await Msg.read(f, str);
+    return is;
+  }
+  if (filePath === "/del") {
+    if (!str) return false;
+    const is = await Msg.del(f, str);
     return is;
   }
   return false;
 };
 async function post(filePath, str) {
+  if (!str) return false;
   let f = "../data/post.json";
   console.log(f, "ne-------------filePath", filePath);
   f = path.join(__dirname, f);
   if (filePath === "/new") {
     const is = await add(f, str);
+
     return is;
   }
   if (filePath === "/list") {
-    const is = await read(f);
+    const is = await read(f, 0);
     return is;
   }
-  if (filePath === "/detail") {
-    const is = await read(f, str);
+  // if (filePath === "/detail") {
+  //   // const is = await read(f, str);
+  //   // return is;
+  // }
+  if (filePath === "/eidt") {
+    const is = await eidt(f, str);
     return is;
   }
   return false;
 }
 
 function read(filePath, obj) {
+  console.log(obj, "-----post read--------");
   return new Promise((resolve, reject) => {
     fs.readFile(filePath, "utf-8", async (err, data) => {
       if (err) {
@@ -77,20 +113,25 @@ function read(filePath, obj) {
         return;
       }
       const arr = JSON.parse(data);
-      if (!obj) {
-        resolve(arr);
-        return;
-      }
-      const id = JSON.parse(obj).id;
-      console.log("id---------------", id);
-      //遍历数组
-      for (var i = 0; i < arr.length; i++) {
-        if (id == arr[i].id) {
-          resolve(arr[i]);
+      if (Array.isArray(arr) && arr.length > 0) {
+        if (obj === 0) {
+          resolve(arr);
           return;
         }
+
+        if (obj && Object.keys(obj).length > 0) {
+          obj = JSON.parse(obj);
+          //遍历数组
+          for (var i = 0; i < arr.length; i++) {
+            console.log(obj.id, "iiiiiiiiiiii", arr[i]);
+            if (obj.id == arr[i].id) {
+              resolve(arr[i]);
+              return;
+            }
+          }
+        }
       }
-      reject(false);
+      // resolve([]);
     });
   });
 }
@@ -156,7 +197,7 @@ function add(filePath, str) {
   });
 }
 
-async function remove(filePath, str) {
+async function del(filePath, str) {
   await fs.readFile(filePath, "utf-8", async (err, data) => {
     if (!err) {
       //拿到数据之后将数据反序列化成数组方便操作
@@ -212,13 +253,18 @@ function eidt(filePath, str) {
       if (!err) {
         //将拿到的数据反序列化成数组
         var arr = JSON.parse(data);
+        console.log("str-------eidt--------", str);
+        if (str) {
+          str = JSON.parse(str);
+        }
+        // str = JSON.parse(str);
         //遍历数组
         for (var i = 0; i < arr.length; i++) {
           if (str.id == arr[i].id) {
-            arr[i].names = "女帝";
+            arr[i] = str;
           }
         }
-        console.log(arr);
+        console.log("id-------eidt--------", str.id);
 
         //写入数据
         fs.writeFile(filePath, JSON.stringify(arr), (err) => {
@@ -240,11 +286,12 @@ function paresPostData(ctx) {
     try {
       let postData = "";
       ctx.req.addListener("data", (data) => {
-        console.log("data----------", data);
+        console.log("paresPostData----------", data);
         postData += data;
       });
-      ctx.req.on("end", () => {
-        resolve(postData);
+      ctx.req.on("end", async () => {
+        console.log("end----------", postData);
+        await resolve(postData);
       });
     } catch (err) {
       reject(err);
