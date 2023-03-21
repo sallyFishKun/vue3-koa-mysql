@@ -1,16 +1,18 @@
 <template>
   <div class="detail">
-    <el-card class="box-card">
-      <template #header>
-        <div class="card-header">
-          <span>物品信息</span>
-          <el-button class="button" type="danger" @click="go">删除</el-button>
-        </div>
-      </template>
-      <EidtPostFrom :id="route.query.id" />
-    </el-card>
-    <AdminRec :id="route.query.id" />
-    <AdminMsg :id="route.query.id" />
+    <el-tabs type="border-card" v-model="tabId">
+      <el-tab-pane label="物品信息" :name="0">
+        <EidtPostFrom :id="route.query.id" />
+      </el-tab-pane>
+      <el-tab-pane label="领取人信息" :name="1"
+        >222
+        <AdminRec :id="route.query.id" v-if="tabId == 1" />
+      </el-tab-pane>
+      <el-tab-pane label="留言板" :name="2"
+        >333
+        <AdminMsg :id="route.query.id" />
+      </el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 <script setup>
@@ -27,52 +29,10 @@ const dialogFormVisible = ref(false);
 const dialogFormVisible2 = ref(false);
 const formLabelWidth = '80px';
 const formLabelWidth2 = '100px';
-const form = reactive({
-  user: '',
-  dec: '',
-  myinfo: {},
-  myMsgs: [
+const tabId = ref(0)
 
-  ],
 
-  mydata: [
-    { label: '物品名称', key: 'name' },
-    { label: '捡到地点', key: 'address' },
-    { label: '联系方式', key: 'phone' },
-    { label: '联系人', key: 'pepole' },
-    { label: '捡到时间', key: 'datetime' },
-    { label: '相关描述', key: 'desc' },
-  ]
-});
-const form2 = reactive({
-  user: '',
-  dec: '',
-  list: []
-});
-onMounted(() => {
 
-});
-// service.post('post/detail', { id: route.query.id }).then(res => {
-//   if (res && res.status == 200) {
-//     form.myinfo = res.data;
-//   }
-// });
-// function getMsgList() {
-//   service.post('msg/list', { id: route.query.id }).then(res => {
-//     if (res && res.status == 200) {
-//       form.myMsgs = res.data;
-//     }
-//   });
-// }
-// function getRecipient() {
-//   service.post('recipient/list', { id: route.query.id }).then(res => {
-//     if (res && res.status == 200) {
-//       form2.list = res.data;
-//     }
-//   });
-// }
-// getRecipient();
-// getMsgList();
 const go = () => router.push('/post');
 
 
@@ -83,6 +43,7 @@ const go = () => router.push('/post');
   width: 100%;
   text-align: left;
   .box-card {
+    max-width: 850px;
     margin: auto;
     .label {
       width: 80px;

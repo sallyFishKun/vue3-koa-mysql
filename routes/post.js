@@ -1,4 +1,5 @@
 const Router = require("koa-router");
+const crypto = require("crypto");
 const router = new Router();
 var fs = require("fs");
 const path = require("path");
@@ -8,6 +9,12 @@ const handle = require("../utils/handle");
 
 function init() {}
 
+router.post("/api/post/add", async (ctx, next) => {
+  console.log(111, "-----post add--------");
+  const is = await add(f, ctx.request.body);
+  handle.responseMsg(is, ctx);
+  next();
+});
 router.post("/api/post/detail", async (ctx, next) => {
   console.log(111, "-----post read--------");
   const is = await read(f, ctx.request.body);
@@ -32,14 +39,42 @@ router.get("/api/post/del", async (ctx, next) => {
   handle.responseMsg(is, ctx);
   next();
 });
-// router.post("/api/msg/add", async (ctx, next) => {
-//   console.log(ctx.request.body, "-----msg add--------");
-//   // const is = await handle.read(f, ctx.request.body);
-//   responseMsg(is, ctx);
-//   next();
-// });
-const getPath = () => {};
+router.get("/api/post/search", async (ctx, next) => {
+  console.log(ctx.request.query, "-----post search--------");
+  const is = await search(f, ctx.request.query);
+  handle.responseMsg(is, ctx);
+  next();
+});
 
+function add(filePath, str) {
+  return new Promise((resolve, reject) => {
+    //如果添加一条数据得首先得读取一下数据
+    fs.readFile(filePath, "utf-8", async (err, data) => {
+      if (!err) {
+        let arr = data;
+        if (arr && typeof arr == "string") {
+          arr = JSON.parse(data); // onData();
+        }
+        str.id = crypto.randomUUID();
+        var o = str;
+        arr.push(o);
+        console.log(arr, "arr");
+        var arr_str = JSON.stringify(arr);
+        fs.writeFile(filePath, arr_str, (err) => {
+          if (!err) {
+            console.log("存储成功");
+            resolve(str.id);
+          } else {
+            reject(false);
+          }
+        });
+      } else {
+        console.log(err);
+        reject(false);
+      }
+    });
+  });
+}
 function read(filePath, obj) {
   console.log(obj, "-----post read--------");
   return new Promise((resolve, reject) => {
@@ -92,6 +127,26 @@ function eidt(filePath, str) {
         });
       } else {
         reject(false);
+      }
+    });
+  });
+}
+function search(filePath, obj) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(filePath, "utf-8", (err, data) => {
+      if (!err) {
+        //拿到数据之后将数据反序列化成数组方便操作
+        var arr = JSON.parse(data);
+        arr = arr.filter((item) => item.name.includes(obj.word));
+        resolve(arr);
+        // fs.writeFile(filePath, JSON.stringify(arr), (err) => {
+        //   if (!err) {
+        //     console.log("search成功");
+        //     resolve(arr);
+        //   } else {
+        //     reject(false);
+        //   }
+        // });
       }
     });
   });

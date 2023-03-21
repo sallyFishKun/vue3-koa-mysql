@@ -1,5 +1,13 @@
 <template>
   <div class="list">
+    <el-form :inline="true" :model="form" class="demo-form-inline">
+      <el-form-item label="失物名称">
+        <el-input v-model="form.word" clearable placeholder="失物名称" />
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="onSubmit">查询</el-button>
+      </el-form-item>
+    </el-form>
     <el-button @click="go">发贴</el-button>
     <el-table :data="form.tableData" stripe class="mytable">
       <el-table-column prop="datetime" label="捡到时间" width="180" />
@@ -33,13 +41,21 @@ import service from '../request/service';
 import { useRouter } from 'vue-router';
 const router = useRouter();
 const form = reactive({
-  tableData: []
+  tableData: [],
+  word: ''
 });
 service.get('post/list').then(res => {
   if (res.status === 200 && Array.isArray(res.data)) {
     form.tableData = res.data;// res.data.map(item => item);
   }
 });
+const onSubmit = () => {
+  service.get('post/search', { word: form.word }).then(res => {
+    if (res.status === 200 && Array.isArray(res.data)) {
+      form.tableData = res.data;
+    }
+  });
+}
 
 // const tableData = reactive([]);
 

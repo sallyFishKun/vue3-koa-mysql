@@ -49,7 +49,7 @@ const form = reactive({
 
 const onSubmit = () => {
   console.log(form);
-  service.post('post/new', form).then(res => {
+  service.post('post/add', form).then(res => {
     if (res && res.status == 200 && res.data) {
       router.replace('/detail?id=' + res.data);
       ElMessage({

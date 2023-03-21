@@ -9,23 +9,24 @@
           @click="dialogFormVisible = true"
           >新增领取人</el-button
         >
-        <el-table :data="form.tableData" stripe class="mytable">
-          <el-table-column prop="date" label="时间" width="180" />
-          <el-table-column prop="user" label="用户名" width="180" />
-          <el-table-column prop="dec" label="留言" width="180" />
-          <el-table-column label="Operations">
-            <template #default="scope">
-              <el-button
-                size="small"
-                type="danger"
-                @click="handleDelete(scope.$index, scope.row)"
-                >删除</el-button
-              >
-            </template>
-          </el-table-column>
-        </el-table>
       </div>
     </template>
+    <el-table :data="form.tableData" stripe class="mytable">
+      <el-table-column prop="date" label="时间" width="180" />
+      <el-table-column prop="user" label="用户名" width="180" />
+      <el-table-column prop="dec" label="留言" width="180" />
+      <el-table-column label="Operations">
+        <template #default="scope">
+          <el-button
+            size="small"
+            type="danger"
+            @click="handleDelete(scope.$index, scope.row)"
+            >删除</el-button
+          >
+        </template>
+      </el-table-column>
+    </el-table>
+
     <RecipientDialog
       :id="props.id"
       @onComplete="getList"
