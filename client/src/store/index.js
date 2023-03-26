@@ -2,6 +2,7 @@ import { createStore } from 'vuex'
 import service from '../request/service'
 export default createStore({
   state: {
+    isAdmin: localStorage.getItem('isAdmin') || 0,
     msgList: [],
     recipientList: []
   },
@@ -12,6 +13,9 @@ export default createStore({
     },
     getRecipientList(state, data) {
       state.recipientList = data
+    },
+    setIsAdmin(state, data) {
+      state.isAdmin = data
     }
   },
   actions: {
@@ -28,6 +32,10 @@ export default createStore({
           context.commit('increment', res.data)
         }
       })
+    },
+    setIsAdmin(context) {
+      const is = localStorage.getItem('isAdmin')
+      context.commit('setIsAdmin', is)
     }
   },
   modules: {}

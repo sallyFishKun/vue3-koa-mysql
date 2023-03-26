@@ -1,12 +1,17 @@
 <template>
-  <nav>
-    <router-link to="/list">失物列表</router-link> |
-    <router-link to="/post">发布失物招领</router-link>
-  </nav>
+  <Menu />
   <router-view />
 </template>
+<script setup>
+import Menu from './views/components/Menu.vue'
+
+</script>
 
 <style lang="less">
+body {
+  padding: 0;
+  margin: 0;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -15,16 +20,16 @@
   color: #2c3e50;
 }
 
-nav {
-  padding: 30px;
+// nav {
+//   padding: 30px;
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+//   a {
+//     font-weight: bold;
+//     color: #2c3e50;
 
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
-}
+//     &.router-link-exact-active {
+//       color: #42b983;
+//     }
+//   }
+// }
 </style>

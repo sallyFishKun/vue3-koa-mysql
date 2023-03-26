@@ -8,24 +8,28 @@
         <el-button type="primary" @click="onSubmit">查询</el-button>
       </el-form-item>
     </el-form>
-    <el-button @click="go">发贴</el-button>
-    <el-table :data="form.tableData" stripe class="mytable">
+    <el-table :data="form.tableData" stripe border class="mytable">
       <el-table-column prop="datetime" label="捡到时间" width="180" />
       <el-table-column prop="name" label="物品名称" width="180" />
       <el-table-column prop="phone" label="联系方式" width="180" />
       <el-table-column label="Operations">
         <template #default="scope">
-          <el-button size="small" @click="handleDetail(scope.row.id)"
+          <el-button
+            size="small"
+            @click="handleDetail(scope.row.id)"
+            v-if="isAdmin == 0"
             >查看详情</el-button
           >
           <el-button
             size="small"
             @click="router.push('admindetail?id=' + scope.row.id)"
+            v-if="isAdmin == 1"
             >编辑</el-button
           >
           <el-button
             size="small"
             type="danger"
+            v-if="isAdmin == 1"
             @click="handleDelete(scope.row.id)"
             >删除</el-button
           >
@@ -36,10 +40,13 @@
 </template>
 
 <script  setup>
-import { onMounted, reactive } from 'vue';
+import { onMounted, reactive, computed } from 'vue';
 import service from '../request/service';
 import { useRouter } from 'vue-router';
+import { useStore } from 'vuex'
 const router = useRouter();
+const store = useStore();
+const isAdmin = computed(() => store.state.isAdmin)
 const form = reactive({
   tableData: [],
   word: ''
