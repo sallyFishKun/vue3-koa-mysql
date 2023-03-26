@@ -1,11 +1,12 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import List from '../views/List.vue'
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+
+    component: List
   },
   {
     path: '/post',
@@ -18,8 +19,7 @@ const routes = [
     path: '/list',
     name: 'list',
 
-    component: () =>
-      import(/* webpackChunkName: "PostFrom" */ '../views/List.vue')
+    component: List
   },
   {
     path: '/detail',
@@ -34,6 +34,13 @@ const routes = [
 
     component: () =>
       import(/* webpackChunkName: "PostFrom" */ '../views/AdminDetail.vue')
+  },
+  {
+    path: '/echarts',
+    name: 'echarts',
+
+    component: () =>
+      import(/* webpackChunkName: "PostFrom" */ '../views/EchartsView.vue')
   }
 ]
 

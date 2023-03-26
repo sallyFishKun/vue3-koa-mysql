@@ -77,7 +77,7 @@ const handleDelete = (index, row) => {
 <style lang="less" scoped>
 .list {
   width: 100%;
-  min-width: 800px;
+  width: 800px;
   overflow-x: auto;
 }
 .mytable {

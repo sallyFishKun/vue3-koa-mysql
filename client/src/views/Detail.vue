@@ -1,5 +1,13 @@
 <template>
   <div class="detail">
+    <div class="affix" :offset="220" style="text-align: left">
+      <el-button
+        type="primary"
+        v-if="isAdmin == 0"
+        @click="router.push('/admindetail?id=' + route.query.id)"
+        >编辑</el-button
+      >
+    </div>
     <el-card class="box-card">
       <template #header>
         <div class="card-header">
@@ -93,12 +101,15 @@
   </div>
 </template>
 <script setup>
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, computed } from 'vue';
 import service from '../request/service';
 import { useRouter, useRoute } from 'vue-router';
 import { ElMessage } from 'element-plus';
+import { useStore } from 'vuex'
 const route = useRoute();
 const router = useRouter();
+const store = useStore();
+const isAdmin = computed(() => store.state.isAdmin)
 const dialogFormVisible = ref(false);
 const dialogFormVisible2 = ref(false);
 const formLabelWidth = '80px';
@@ -228,4 +239,10 @@ const onRecipient = () => {
 .box-card {
   width: 480px;
 }
+.affix {
+  position: fixed;
+  top: 120px;
+  left: calc(100%-500px);
+}
 </style>
+

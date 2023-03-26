@@ -76,7 +76,10 @@ function read(filePath, obj) {
         arr = JSON.parse(data);
       }
       const id = obj.id;
-
+      if (id == "all") {
+        resolve(arr);
+        return;
+      }
       //遍历数组
       for (var i = 0; i < arr.length; i++) {
         if (id == arr[i].id) {

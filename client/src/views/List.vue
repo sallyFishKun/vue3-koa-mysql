@@ -14,10 +14,7 @@
       <el-table-column prop="phone" label="联系方式" width="180" />
       <el-table-column label="Operations">
         <template #default="scope">
-          <el-button
-            size="small"
-            @click="handleDetail(scope.row.id)"
-            v-if="isAdmin == 0"
+          <el-button size="small" @click="handleDetail(scope.row.id)"
             >查看详情</el-button
           >
           <el-button
@@ -84,7 +81,7 @@ const go = () => {
 <style lang="less" scoped>
 .list {
   width: 100%;
-  min-width: 800px;
+  // width: 800px;
   overflow-x: auto;
 }
 .mytable {

@@ -8,7 +8,7 @@
     active-text-color="#ffd04b"
   >
     <div class="myheard" @click="onChange">
-      <el-avatar :size="50" />
+      <el-avatar :size="40" />
       <span class="myname">
         {{ isAdmin == 1 ? '我是管理员' : '我是用户' }}
       </span>
@@ -45,11 +45,18 @@ const router = useRouter()
 const route = useRoute()
 const form = reactive({
   //   isAdmin: Number(route.query.isAdmin)
-  adminRouter: [{
-    index: 0,
-    path: '/list',
-    name: '失物列表'
-  }],
+  adminRouter: [
+    {
+      index: 0,
+      path: '/list',
+      name: '失物列表'
+    },
+    {
+      index: 1,
+      path: '/echarts',
+      name: 'echarts'
+    },
+  ],
   userRouter: [
     {
       index: 0,
@@ -69,7 +76,7 @@ const activeIndex = computed(() => {
   //   const arr = isAdmin ? form.adminRouter : form.userRouter
   //   arr.map(item => item.path == route.path)
   //   console.log(arr)
-  return route.path
+  return route.path == '/' ? '/list' : route.path
 })
 
 
@@ -96,6 +103,7 @@ const onChange = () => {
   display: flex;
   align-items: center;
   margin-right: 100px;
+  padding-left: 15px;
   .myname {
     margin-left: 10px;
     display: inline-block;

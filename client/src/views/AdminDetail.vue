@@ -4,13 +4,11 @@
       <el-tab-pane label="物品信息" :name="0">
         <EidtPostFrom :id="route.query.id" />
       </el-tab-pane>
-      <el-tab-pane label="领取人信息" :name="1"
-        >222
+      <el-tab-pane label="领取人信息" :name="1">
         <AdminRec :id="route.query.id" v-if="tabId == 1" />
       </el-tab-pane>
-      <el-tab-pane label="留言板" :name="2"
-        >333
-        <AdminMsg :id="route.query.id" />
+      <el-tab-pane label="留言板" :name="2">
+        <AdminMsg :id="route.query.id" v-if="tabId == 2" />
       </el-tab-pane>
     </el-tabs>
   </div>
